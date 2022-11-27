@@ -4,8 +4,7 @@ from fastapi import FastAPI
 
 import twint
 import pandas as pd
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-
+from transformers import pipeline
 
 def tweet_sentiment(keyword, amount=100):
     sentiment_pipeline = pipeline("sentiment-analysis")
@@ -41,14 +40,9 @@ app = FastAPI()
 @app.get("/{query}")
 def read_root(query: str):
     pos, neg = tweet_sentiment(query)
-    if neg == 0:
-        return {"sentiment": "Positive", "color": "green"}
-    if pos == 0:
-        return {"sentiment": "Negative", "color": "red"}
-    score = pos * 100 / neg
-    if score == 100:
-        return {"sentiment": "Neutral", "color": "grey"}
-    elif score < 100 and score > 0:
-        return {"sentiment": "Mostly Negative", "color": "red"}
+    if neg == pos:
+        return {"sentiment": "Neutral", "percent":50}
+    if neg > pos:
+        return {"sentiment": "Negative", "percent":neg}
     else:
-        return {"sentiment": "Mostly Positive", "color": "red"}
+        return {"sentiment": "Positive", "percent":pos}
