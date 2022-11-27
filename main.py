@@ -1,9 +1,6 @@
-from typing import Union
-import os
 from fastapi import FastAPI
 
 import twint
-import pandas as pd
 from transformers import pipeline
 
 def tweet_sentiment(keyword, amount=100):
