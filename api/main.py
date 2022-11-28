@@ -24,15 +24,30 @@ def tweet_sentiment(keyword, amount=50):
     negative = 0
     positive = 0
 
-    results = sentiment_pipeline(list(df["tweet"]))
 
-    for result in results:
+    results = sentiment_pipeline(list(df["tweet"]))
+    
+    print(len(results))
+
+    best_rated_index = 0
+    best_rated = 0
+    worst_rated_index = 0
+    worst_rated = 0
+
+    for i, result in enumerate(results):
         if result["label"] == "POSITIVE":
+            if (result["score"] > best_rated):
+                best_rated_index = i
             positive += 1
         else:
+            if (result["score"] > worst_rated):
+                worst_rated_index = i
             negative += 1
+    print(list(df["tweet"])[worst_rated_index])
+    print(list(df["name"])[worst_rated_index])
+    print(list(df["username"])[worst_rated_index])
 
-    return positive, negative
+    return positive/len(results)*100, negative/len(results)*100, list(df["tweet"])[best_rated_index], list(df["name"])[best_rated_index], list(df["username"])[best_rated_index], list(df["tweet"])[worst_rated_index], list(df["name"])[worst_rated_index], list(df["username"])[worst_rated_index],
 
 
 app = FastAPI()
@@ -54,10 +69,10 @@ app.add_middleware(
 @app.get("/{query}")
 def read_root(query: str):
     print(query)
-    pos, neg = tweet_sentiment(query)
+    pos, neg, best_tweet, best_name, best_username, worst_tweet, worst_name, worst_username = tweet_sentiment(query)
     if neg == pos:
         return {"sentiment": "Neutral", "percent":50}
     if neg > pos:
-        return {"sentiment": "Negative", "percent":neg*2}
+        return {"sentiment": "Negative", "percent":neg}
     else:
-        return {"sentiment": "Positive", "percent":pos*2}
+        return {"sentiment": "Positive", "percent":pos}
