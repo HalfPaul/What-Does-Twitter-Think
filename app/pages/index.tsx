@@ -1,33 +1,8 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
-import styles from '../styles/Home.module.css'
 import axios from "axios";
-
-interface CardInterface {
-  tweet: string;
-  name: string;
-  username: string;
-}
-
-
-const Card = (props: CardInterface) => {
-  return (
-      <div className="border-2 border-grey rounded-xl p-5 w-[50%]">
-        <div className="flex flex-row items-center">
-          <h1 className="text-lg">{props.name}</h1>
-          <h1 className="text-sm text-gray-500 ml-4">@{props.username}</h1>
-        </div>
-        <div>
-          <p>
-            {props.tweet}
-          </p>
-        </div>
-
-      </div>
-
-  );
-}
+import { Card } from "../components/Card"
 
 export default function Home() {
   const queryRef = useRef<HTMLInputElement>(null);
@@ -60,12 +35,28 @@ export default function Home() {
 
       <main className="h-screen flex justify-center mt-12">
         <div className="flex flex-col w-full items-center">
-          <h1 className="font-bold text-5xl ">What does Twitter think?</h1>
+          <div className="flex w-full justify-center items-center">
+            <Image
+              src="/logo-twitter.png"
+              alt="Twitter Logo"
+              width={100}
+              height={100}
+            />
+            <h1 className="font-bold text-5xl ">What does Twitter think?</h1>
+            <Image
+              src="/logo-twitter.png"
+              alt="Twitter Logo"
+              width={100}
+              height={100}
+            />
+          </div>
+
           <div className="flex flex-row mt-12 w-full justify-center">
             <input
               type="text"
               className="border-gray-300 border-solid border rounded py-2 px-4 w-[20%]"
               ref={queryRef}
+              placeholder="Get Twitter's opinion on something"
             />
             <button
               className="border border-black border-1 w-[5%] hover:bg-blue-200"
