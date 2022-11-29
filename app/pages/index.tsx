@@ -37,7 +37,8 @@ export default function Home() {
 
   const makeRequest = async () => {
     if (queryRef.current?.value != null) {
-      const data = await axios.get(`http://127.0.0.1:8000/${queryRef.current.value}`);
+      const query = queryRef.current.value.replaceAll(" ", "_")
+      const data = await axios.get(`http://127.0.0.1:8000/${query}`);
       console.log(data.data);
       setContent(data.data.sentiment);
       setPercentage(data.data.percent);
