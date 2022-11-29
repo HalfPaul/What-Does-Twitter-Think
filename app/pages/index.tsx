@@ -1,8 +1,54 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { useRef, useState } from 'react'
 import styles from '../styles/Home.module.css'
+import axios from "axios";
+
+interface CardInterface {
+  tweet: string;
+  name: string;
+  username: string;
+}
+
+
+const Card = (props: CardInterface) => {
+  return (
+      <div className="border-2 border-grey rounded-xl p-5 w-[50%]">
+        <div className="flex flex-row items-center">
+          <h1 className="text-lg">{props.name}</h1>
+          <h1 className="text-sm text-gray-500 ml-4">@{props.username}</h1>
+        </div>
+        <div>
+          <p>
+            {props.tweet}
+          </p>
+        </div>
+
+      </div>
+
+  );
+}
 
 export default function Home() {
+  const queryRef = useRef<HTMLInputElement>(null);
+  const [content, setContent] = useState<any>("")
+  const [percentage ,setPercentage] = useState<any>(0)
+  const [tweets, setTweets] = useState({best_tweet: "", best_name: "", best_username: "", worst_tweet: "", worst_name: "", worst_username: ""})
+
+  const makeRequest = async () => {
+    if (queryRef.current?.value != null) {
+      const data = await axios.get(`http://127.0.0.1:8000/${queryRef.current.value}`);
+      console.log(data.data);
+      setContent(data.data.sentiment);
+      setPercentage(data.data.percent);
+      setTweets(tweets => ({...tweets, best_tweet: data.data.best_tweet,
+        best_name: data.data.best_name, best_username: data.data.best_username,
+        worst_tweet: data.data.worst_tweet, worst_name: data.data.worst_name,
+        worst_username: data.data.worst_username}))
+    }
+  
+  } 
+
   return (
     <div>
       <Head>
@@ -12,9 +58,49 @@ export default function Home() {
       </Head>
 
       <main className="h-screen flex justify-center mt-12">
-        <div className="flex flex-col">
-          <h1 className="font-bold text-5xl ">What does the Twitter think?</h1>
-          <input type="text" className="w-[50%] mx-auto mt-5 pr-2 rounded-xl h-[5%]" />
+        <div className="flex flex-col w-full items-center">
+          <h1 className="font-bold text-5xl ">What does Twitter think?</h1>
+          <div className="flex flex-row mt-12 w-full justify-center">
+            <input
+              type="text"
+              className="border-gray-300 border-solid border rounded py-2 px-4 w-[20%]"
+              ref={queryRef}
+            />
+            <button
+              className="border border-black border-1 w-[5%] hover:bg-blue-200"
+              onClick={makeRequest}
+            >
+              Search
+            </button>
+          </div>
+          {content != "" && (
+            <div className="flex flex-col items-center justify center">
+              <div className="mt-24 flex items-center justify center">
+                <h1 className="font-bold text-3xl">
+                  {content}: {Math.round(percentage)} %
+                </h1>
+              </div>
+              <div className="mt-12 grid grid-cols-2 grid-rows-2 place-content-center place-items-center gap-x-0 gap-y-0">
+                <h1 className="col-span-1 row-span-1 text-lg font-bold">
+                  Most Positive Tweet:
+                </h1>
+
+                <h1 className="col-span-1 row-span-1 text-lg font-bold">
+                  Most Hateful Tweet:
+                </h1>
+                <Card
+                  tweet={tweets.best_tweet}
+                  username={tweets.best_username}
+                  name={tweets.best_name}
+                />
+                <Card
+                  tweet={tweets.worst_tweet}
+                  username={tweets.worst_username}
+                  name={tweets.worst_name}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
