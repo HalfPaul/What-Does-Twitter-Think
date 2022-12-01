@@ -10,9 +10,10 @@ from transformers import pipeline
 def tweet_sentiment(keyword, amount=50):
     sentiment_pipeline = pipeline("sentiment-analysis")
 
+
     c = twint.Config()
 
-    c.Search = [keyword]
+    c.Search = [keyword.replace("_", " ")]
     c.Limit = amount
     c.Lang = "en"
     c.Pandas = True
