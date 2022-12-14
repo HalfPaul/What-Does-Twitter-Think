@@ -6,12 +6,15 @@ import { Card } from "../components/Card"
 
 export default function Home() {
   const queryRef = useRef<HTMLInputElement>(null);
+
+  const [loading, setLoading] = useState<boolean>(false)
   const [content, setContent] = useState<any>("")
   const [percentage ,setPercentage] = useState<any>(0)
   const [tweets, setTweets] = useState({best_tweet: "", best_name: "", best_username: "", worst_tweet: "", worst_name: "", worst_username: ""})
 
   const makeRequest = async () => {
     if (queryRef.current?.value != null) {
+      setLoading(true)
       const query = queryRef.current.value.replaceAll(" ", "_")
       const data = await axios.get(`http://localhost:8000/${query}`);
       console.log(data.data);
@@ -22,6 +25,7 @@ export default function Home() {
         worst_tweet: data.data.worst_tweet, worst_name: data.data.worst_name,
         worst_username: data.data.worst_username}))
     }
+    setLoading(false)
   
   } 
 
@@ -62,7 +66,7 @@ export default function Home() {
               className="border border-black border-1 w-[5%] hover:bg-blue-200"
               onClick={makeRequest}
             >
-              Search
+              {loading ? "Loading..." : "Search"}
             </button>
           </div>
           {content != "" && (
