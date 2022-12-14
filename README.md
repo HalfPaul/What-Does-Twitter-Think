@@ -13,3 +13,5 @@ cd api
 docker build -t twitter_think_api .
 docker run -p 8000:8000 twitter_think_api
 ```
+
+![Project Image](img.png)
